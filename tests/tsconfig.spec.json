@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "removeComments": false,
+        "sourceMap": true,
+        "noErrorTruncation": true,
+        "pretty": true
+    },
+    "extends": "../tsconfig.json"
+}

@@ -1,0 +1,37 @@
+{
+    "name": "transactions-challenge",
+    "version": "0.1.0",
+    "engines": {
+        "node": ">= 19"
+    },
+    "scripts": {
+        "build": "tsc && node scripts/rename-to-mjs.js",
+        "test": "vitest --config tests/unit/vitest.unit.config.ts --coverage",
+        "test:integration": "vitest --config tests/integration/vitest.integration.config.ts"
+    },
+    "type": "module",
+    "author": "Ian Rossi",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/archiver": "^6.0.3",
+        "@types/aws-lambda": "^8.10.149",
+        "@types/big.js": "^6.2.2",
+        "@types/fs-extra": "^11.0.4",
+        "@types/node": "^22.14.1",
+        "@types/retry": "^0.12.5",
+        "@vitest/coverage-v8": "^3.1.1",
+        "archiver": "^7.0.1",
+        "fs-extra": "^11.3.0",
+        "typescript": "^5.8.3",
+        "vitest": "^3.1.1"
+    },
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.788.0",
+        "@aws-sdk/client-lambda": "^3.787.0",
+        "@aws-sdk/client-scheduler": "^3.787.0",
+        "@humanwhocodes/retry": "^0.4.2",
+        "big.js": "^6.2.2",
+        "class-validator": "^0.14.1",
+        "dotenv": "^16.5.0"
+    }
+}

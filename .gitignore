@@ -1,0 +1,13 @@
+dist/
+node_modules/
+nodejs/
+dist.zip
+node_modules.zip
+.env
+.env.test.integration
+.vscode/
+coverage/
+**/.DS_Store
+tests/integration/infra/.terraform/
+tests/integration/infra/terraform.tfstate*
+base-url.txt

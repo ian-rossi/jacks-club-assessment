@@ -1,0 +1,31 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "allowJs": false,
+        "allowSyntheticDefaultImports": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "emitDecoratorMetadata": true,
+        "exactOptionalPropertyTypes": true,
+        "experimentalDecorators": true,
+        "module": "NodeNext",
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noUncheckedIndexedAccess": true,
+        "noUncheckedSideEffectImports": true,
+        "noUnusedLocals": true,
+        "outDir": "dist",
+        "pretty": false,
+        "removeComments": true,
+        "resolveJsonModule": true,
+        "rewriteRelativeImportExtensions": true,
+        "strict": true,
+        "stripInternal": true,
+        "target": "ES2024"
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}

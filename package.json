@@ -1,0 +1,28 @@
+{
+    "name": "jacks-club-assessment",
+    "version": "0.1.0",
+    "engines": {
+        "node": "<= 18"
+    },
+    "scripts": {
+        "test": "vitest"
+    },
+    "type": "module",
+    "author": "Ian Rossi",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.147",
+        "@types/big.js": "^6.2.2",
+        "@types/node": "^22.13.10",
+        "@vitest/coverage-v8": "^3.0.9",
+        "typescript": "^5.8.2",
+        "vitest": "^3.0.9"
+    },
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.767.0",
+        "@aws-sdk/client-lambda": "^3.758.0",
+        "big.js": "^6.2.2",
+        "class-validator": "^0.14.1",
+        "dotenv": "^16.4.7"
+    }
+}

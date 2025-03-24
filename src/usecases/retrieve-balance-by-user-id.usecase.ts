@@ -35,11 +35,11 @@ export class RetrieveBalanceByUserIdUseCaseImpl extends UseCase<
             input.idempotentKey = `100:credit:${userId}:${getISO8601UTCDate()}`;
             input.type = TransactionType.CREDIT;
             input.userId = userId;
-            await this.transactionsRepository.create(input);
-            balance = await this.transactionsAggregateRepository.findBalanceByUserId(
-                userId
+            await this.transactionsRepository.createAndUpdateTransactionsAggregate(
+                input, { userId, balance: '100' }
             );
+            balance = new Big(100);
         }
-        return balance!;
+        return balance;
     }
 }

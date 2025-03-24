@@ -37,12 +37,16 @@ export class CreateTransactionUseCaseImpl extends UseCase<
             if (input.type == TransactionType.DEBIT) {
                 throw buildUnprocessableEntityResponse(this.BALANCE_CANT_BE_NEGATIVE);
             }
-            balance = new Big(0);
+            await this.transactionsAggregateRepository.createOrUpdate({ userId, balance: '0' });
+            const newBalance = await this.transactionsAggregateRepository.findBalanceByUserId(userId);
+            balance = newBalance ?? new Big(0);
         }
         const newBalance = getNewBalance(balance, input);
         if (newBalance.lt(0)) {
             throw buildUnprocessableEntityResponse(this.BALANCE_CANT_BE_NEGATIVE);
         }
-        return this.transactionsRepository.create(input);
+        return this.transactionsRepository.createAndUpdateTransactionsAggregate(
+            input, { userId, balance: newBalance }
+        );
     }
 }

@@ -8,7 +8,7 @@
         "emitDecoratorMetadata": true,
         "exactOptionalPropertyTypes": true,
         "experimentalDecorators": true,
-        "module": "Node18",
+        "module": "NodeNext",
         "noFallthroughCasesInSwitch": true,
         "noImplicitOverride": true,
         "noImplicitReturns": true,

@@ -1,7 +1,6 @@
+import { Put, TransactWriteItemsCommand, type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
-    GetItemCommand,
-    TransactWriteItemsCommand,
-    type DynamoDBClient,
+    GetItemCommand
 } from "@aws-sdk/client-dynamodb";
 import Big from "big.js";
 import { type TransactionAggregate } from "../models/transaction-aggregate.interface.ts";
@@ -15,6 +14,28 @@ export class TransactionsAggregateRepository {
     private readonly BALANCE = "balance";
 
     constructor(private readonly client: DynamoDBClient) { }
+
+    async createOrUpdate(input: TransactionAggregate): Promise<void> {
+        const iso8601Date = getISO8601UTCDate();
+        const idempotencyKey = `${input.userId
+            }:${input.balance.toString()}:${iso8601Date}`;
+        return this.client
+            .send(
+                new TransactWriteItemsCommand({
+                    TransactItems: [
+                        {
+                            Put: this.getPutCommmand(input),
+                        },
+                    ],
+                    ClientRequestToken: idempotencyKey,
+                })
+            )
+            .then((result) => { })
+            .catch((e) => {
+                console.error(e);
+                throw e;
+            });
+    }
 
     async findBalanceByUserId(userId: string): Promise<Big | null> {
         return this.client
@@ -43,29 +64,11 @@ export class TransactionsAggregateRepository {
             });
     }
 
-    async createOrUpdate(input: TransactionAggregate): Promise<void> {
-        const iso8601Date = getISO8601UTCDate();
-        const idempotencyKey = `${input.userId
-            }:${input.balance.toString()}:${iso8601Date}`;
+    getPutCommmand(input: TransactionAggregate): Put {
         const dynamoDBRecord = convertKeysFromCamelCaseToDynamoDBRecord(input);
-        return this.client
-            .send(
-                new TransactWriteItemsCommand({
-                    TransactItems: [
-                        {
-                            Put: {
-                                TableName: this.TABLE_NAME,
-                                Item: dynamoDBRecord,
-                            },
-                        },
-                    ],
-                    ClientRequestToken: idempotencyKey,
-                })
-            )
-            .then((result) => { })
-            .catch((e) => {
-                console.error(e);
-                throw e;
-            });
+        return {
+            TableName: this.TABLE_NAME,
+            Item: dynamoDBRecord,
+        }
     }
 }

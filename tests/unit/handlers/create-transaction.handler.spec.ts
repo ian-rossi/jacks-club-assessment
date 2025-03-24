@@ -1,11 +1,11 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import os from "os";
 import { describe, expect, it, vi } from "vitest";
-import { BAD_REQUEST_TEXT } from "../../src/constants/constants";
-import { handler } from "../../src/handlers/create-transaction.handler";
-import { RFC9457Output } from "../../src/models/rfc-9457-output.interface";
+import { BAD_REQUEST_TEXT } from "../../../src/constants/constants";
+import { handler } from "../../../src/handlers/create-transaction";
+import { RFC9457Output } from "../../../src/models/rfc-9457-output.interface";
 
-vi.mock("../../src/handlers/use-case-factory.utils", () => ({
+vi.mock("../../../src/handlers/use-case-factory.utils", () => ({
     getCreateTransactionUseCase: vi.fn(() => ({
         execute: vi.fn((_) => "00000000-0000-0000-0000-000000000000"),
     })),
@@ -14,6 +14,7 @@ vi.mock("../../src/handlers/use-case-factory.utils", () => ({
 describe("Create transaction handler", () => {
     ["/transactions", "/transactions/"].forEach((path) => {
         it(`should return 201 with path ${path} when successful`, async () => {
+            // Arrange
             const event: APIGatewayProxyEvent = {
                 body: JSON.stringify({
                     idempotentKey: "1",
@@ -24,8 +25,10 @@ describe("Create transaction handler", () => {
                 path,
             } as any;
 
+            // Act
             const response = await handler(event);
 
+            // Assert
             expect(response.statusCode).toBe(201);
             expect(response.headers?.Location).toBe(
                 "/transactions/00000000-0000-0000-0000-000000000000"
@@ -35,12 +38,11 @@ describe("Create transaction handler", () => {
     });
 
     it("should return 400 when body is null", async () => {
+        // Arrange
         const event: APIGatewayProxyEvent = {
             body: null,
             path: "/transactions",
         } as any;
-
-        const response = await handler(event);
 
         const expectedBody: RFC9457Output = {
             status: 400,
@@ -49,35 +51,43 @@ describe("Create transaction handler", () => {
             detail: "Body can't be null.",
             properties: {},
         };
+
         const expectedBodyStr = JSON.stringify(expectedBody);
 
+        // Act
+        const response = await handler(event);
+
+        // Assert
         expect(response.statusCode).toBe(400);
         expect(response.body).toBe(expectedBodyStr);
     });
 
     it("should return 400 when body is invalid JSON", async () => {
+        // Arrange
         const event: APIGatewayProxyEvent = {
             body: "invalid-json",
             path: "/transactions",
         } as any;
-
-        const response = await handler(event);
 
         const expectedBody: RFC9457Output = {
             status: 400,
             title: BAD_REQUEST_TEXT,
             instance: "/transactions",
             detail:
-                "Following error happened on parse JSON: Unexpected token i in JSON at position 0",
+                "Following error happened on parse JSON: Unexpected token 'i', \"invalid-json\" is not valid JSON",
             properties: {},
         };
         const expectedBodyStr = JSON.stringify(expectedBody);
 
+        // Act
+        const response = await handler(event);
+
+        // Assert
         expect(response.statusCode).toBe(400);
         expect(response.body).toBe(expectedBodyStr);
     });
 
-    const invalidValues: [any, string][] = [
+    const invalidValuesTuples: [any, string][] = [
         [undefined, "undefined"],
         [null, "null"],
         [true, "not string"],
@@ -94,8 +104,7 @@ describe("Create transaction handler", () => {
     const validateErrorsScenarios: [any, string, string][] = []
     for (let i = 0; i < fields.length; i++) {
         const key = fields[i];
-        for (let j = 0; j < invalidValues.length; j++) {
-            const invalidValueTuple = invalidValues[j];
+        for (const invalidValueTuple of invalidValuesTuples) {
             const invalidValue = invalidValueTuple[0];
             const invalidValueDescription = invalidValueTuple[1];
             const defaultMessage = defaultMessages[i];
@@ -116,6 +125,7 @@ describe("Create transaction handler", () => {
         const validationErrorDescription = tuple[1];
         const expectedErrorMessage = tuple[2];
         it(`should return 400 when field ${key} is ${validationErrorDescription}`, async () => {
+            // Arrange
             const validInput = {
                 idempotentKey: "1",
                 userId: "1",
@@ -128,8 +138,6 @@ describe("Create transaction handler", () => {
                 path: "/transactions",
             } as any;
 
-            const response = await handler(event);
-
             const expectedBody: RFC9457Output = {
                 status: 400,
                 title: BAD_REQUEST_TEXT,
@@ -141,12 +149,17 @@ describe("Create transaction handler", () => {
             };
             const expectedBodyStr = JSON.stringify(expectedBody);
 
+            // Act
+            const response = await handler(event);
+
+            // Assert
             expect(response.statusCode).toBe(400);
             expect(response.body).toBe(expectedBodyStr);
         });
     });
 
     it("should return 500 when not expected error occurs", async () => {
+        // Arrange
         const event: APIGatewayProxyEvent = {
             body: JSON.stringify({
                 idempotentKey: "1",
@@ -157,14 +170,16 @@ describe("Create transaction handler", () => {
             path: undefined
         } as any;
 
-        const response = await handler(event);
-
         const expectedBody: RFC9457Output = {
             status: 500,
             title: "Internal server error"
         };
         const expectedBodyStr = JSON.stringify(expectedBody);
 
+        // Act
+        const response = await handler(event);
+
+        // Assert
         expect(response.statusCode).toBe(500);
         expect(response.body).toBe(expectedBodyStr);
     });
